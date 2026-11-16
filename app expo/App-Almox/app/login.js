@@ -33,7 +33,7 @@ export default function Login() {
   // Criamos uma função de fazerLogin, pra depois poder ser utilizada no botão de entrar na página
   const fazerLogin = async () => { // A função trabalha com operações assíncronas (que trabalham juntas ao Flask e esperam um e outro se conversarem)
   try { // Significa que ele ira tentar fazer a conexão com o Flask (se der certo, o código continua e se der erro ele vai lá pro catch)
-    const resposta = await fetch('http://10.154.20.212:5000/login_app', { // Fetch faz uma requisição ao servidor Flask, recebendo a rota de login específica para o app
+    const resposta = await fetch('http://192.168.1.5:5000/login_app', { // Fetch faz uma requisição ao servidor Flask, recebendo a rota de login específica para o app
       method: 'POST', // As informações de email e senha estão sendo enviados pelo método POST
       headers: {
         'Content-Type': 'application/json', // Isso informa ao servidor que os dados enviados  tem que ser em formato JSON
@@ -93,7 +93,7 @@ export default function Login() {
           AO SENAI ALMOXARIFADO
         </Text>
 
-        <View style={styles.inputContainer}> // Agrupa todos os elementos do quadro branco
+        <View style={styles.inputContainer}> 
           <Image
             source={require('../assets/fiep.png')}
             style={styles.logo}

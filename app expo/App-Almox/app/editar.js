@@ -138,7 +138,7 @@ export default function Editar() {
         }
 
         const resposta = await fetch(
-          'http://10.154.20.212:5000/entrada_app',
+          'http://192.168.1.5:5000/entrada_app',
           {
             method: 'POST',
             body: formulario,

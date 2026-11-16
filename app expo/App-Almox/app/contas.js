@@ -34,7 +34,7 @@ export default function Usuarios() {
       try {
 
         const resposta = await fetch(
-          'http://10.154.20.212:5000/contas_app'
+          'http://192.168.1.5:5000/contas_app'
         );
 
         console.log('STATUS:', resposta.status);
@@ -75,7 +75,7 @@ export default function Usuarios() {
           onPress: async () => {
             try {
               const resposta = await fetch(
-                `http://10.154.20.212:5000/excluirUsuario/${id}`,
+                `http://192.168.1.5:5000/excluirUsuario/${id}`,
                 { method: 'DELETE' }
               );
 

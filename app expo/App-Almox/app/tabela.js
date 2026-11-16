@@ -48,7 +48,7 @@ export default function Tabela() {
   useCallback(() => {
     const buscarProdutos = async () => { // Declara a função que vai buscar os produtos
       try { // Try: função de tratamento de possíveis erros durante a busca do Flask
-        const resposta = await fetch('http://10.154.20.212:5000/tabela_app'); // Fetch: realiza uma requisição HTTP para acessar o endereço da maquina e a rota criada no app.py
+        const resposta = await fetch('http://192.168.1.5:5000/tabela_app'); // Fetch: realiza uma requisição HTTP para acessar o endereço da maquina e a rota criada no app.py
         const dados = await resposta.json(); // Interpreta os dados enviados em JSON, aguarda a conversão e armazena em "dados"
 
         if (dados.success) { // Se os dados retornarem "sucess" na API 
@@ -92,7 +92,7 @@ const excluirItem = (id) => { // Quando um usuário pede e a exclusão de um pro
         onPress: async () => { // A exclusão só começa quando o usuário toca em excluir (ação assincrona)
           try { // Um bloco que tentará executar as operações
             const resposta = await fetch( // Cria a variável resposta e aguarda a conclusão da solicitação
-              `http://10.154.20.212:5000/excluir/${id}`, // Endereço do endpoint responsável por excluir o produto. ${id} serve para inserir o identificador recebido pela função diretamente na URL
+              `http://192.168.1.5:5000/excluir/${id}`, // Endereço do endpoint responsável por excluir o produto. ${id} serve para inserir o identificador recebido pela função diretamente na URL
               { method: 'DELETE' } // Define o método HTTP DELETE
             );
             // Basicamente essa parte serve para enviar uma solicitação ao servidor Flask, que vai identificar o produto pelo ID e
@@ -155,7 +155,7 @@ const excluirItem = (id) => { // Quando um usuário pede e a exclusão de um pro
         // &&: Operador lógico "E", que é quando o conteúdo a direita é renderizado quando a expressão a esquerda é verdadeira
         <Image // Esse é o componente do React Native que é utilizado para carregar imagens
           source={{ // Source: Informa da onde a imagem será carregada 
-            uri: `http://10.154.20.212:5000${imagemAberta}` // Uri: Especifica o endereço da imagem, combinando o endereço do servidor com o caminho armazenado no estado, solicitando a imgem ao servidor Flask
+            uri: `http://192.168.1.5:5000${imagemAberta}` // Uri: Especifica o endereço da imagem, combinando o endereço do servidor com o caminho armazenado no estado, solicitando a imgem ao servidor Flask
           }}
           style={styles.imagemPopup}
           resizeMode="contain" // Define como a imagem irá aparecer ao ser inserida. Nesse caso, "contain" serve pra manter a proporção original da imagem e tenta exibir ela inteira, dentro da área definida
