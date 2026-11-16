@@ -3,10 +3,9 @@ import { useFonts, Inter_400Regular, Inter_700Bold } from '@expo-google-fonts/in
 import { Montserrat_400Regular, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
 import { Poppins_700Bold } from '@expo-google-fonts/poppins';
 import { LinearGradient } from 'expo-linear-gradient';
-import { useState } from 'react'; // Serve pra criar uma informação que pode mudar durante o funcionamento da tela
-import { router } from 'expo-router'; // Serve para fazer a navegação das telas
-import AsyncStorage from '@react-native-async-storage/async-storage'; //Guarda as informações de login localmente
-
+import { useState } from 'react';
+import { router } from 'expo-router';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login() {
   const [fontsLoaded] = useFonts({
@@ -17,70 +16,66 @@ export default function Login() {
     Poppins_700Bold,
   });
 
-  // Aqui é guardado o valor de email e senha, e antes do usuário digitar o valor inicial é vazio
   const [email, setEmail] = useState('');
   const [senha, setSenha] = useState('');
 
-  // Aqui é guardado o valor verdadeiro ou falso, que quando o usuário clica na caixa de input é ativado TRUE (que depois é usado pra mudar a cor das bordas pra azul)
-  const [emailFocus, setEmailFocus] = useState(false); // O campo não foi selecionado, fica emailFocus, se for ele vira setEmailFocus
+  const [emailFocus, setEmailFocus] = useState(false);
   const [senhaFocus, setSenhaFocus] = useState(false);
 
-  // Só retorna depois de executar todos os Hooks
   if (!fontsLoaded) {
     return null;
   }
 
-  // Criamos uma função de fazerLogin, pra depois poder ser utilizada no botão de entrar na página
-  const fazerLogin = async () => { // A função trabalha com operações assíncronas (que trabalham juntas ao Flask e esperam um e outro se conversarem)
-  try { // Significa que ele ira tentar fazer a conexão com o Flask (se der certo, o código continua e se der erro ele vai lá pro catch)
-    const resposta = await fetch('http://192.168.1.5:5000/login_app', { // Fetch faz uma requisição ao servidor Flask, recebendo a rota de login específica para o app
-      method: 'POST', // As informações de email e senha estão sendo enviados pelo método POST
-      headers: {
-        'Content-Type': 'application/json', // Isso informa ao servidor que os dados enviados  tem que ser em formato JSON
-      },
-      body: JSON.stringify({ // O JavaScript tem um objeto e precisa ser transformado em JSON para enviar a requisição
-        email: email,
-        senha: senha,
-      }),
-    });
+  const fazerLogin = async () => {
+    try {
+      const resposta = await fetch('http://192.168.1.5:5000/login_app', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          email: email,
+          senha: senha,
+        }),
+      });
 
-    const dados = await resposta.json(); // Aqui transformamos novamente o JSON em objetvo para ser requisitado depois no código (dados.tipo, dados.usuario)
+      const dados = await resposta.json();
 
-    console.log('STATUS:', resposta.status); // Mostra no terminal qual o status da requisição do usuário
-    console.log('RESPOSTA DO SERVIDOR:', dados); // Mostra a resposta do servidor 
+      console.log('STATUS:', resposta.status);
+      console.log('RESPOSTA DO SERVIDOR:', dados);
 
-    if (!resposta.ok) { // Se a requisição não der certo 
-      alert(dados.mensagem || 'Email ou senha incorretos'); // Ai uma mensagem de alerta será enviada 
-      return; // Para a função da mensagem
+      if (!resposta.ok) {
+        alert(dados.mensagem || 'Email ou senha incorretos');
+        return;
+      }
+
+      await AsyncStorage.setItem('tipoUsuario', dados.tipo);
+      await AsyncStorage.setItem('nomeUsuario', dados.usuario);
+      await AsyncStorage.setItem('emailUsuario', dados.email);
+
+      router.replace('/tabela');
+
+    } catch (erro) {
+      console.log(erro);
+      alert('Não foi possível conectar ao servidor');
     }
-
-    await AsyncStorage.setItem('tipoUsuario', dados.tipo); // Salva o tipo de usuário
-    await AsyncStorage.setItem('nomeUsuario', dados.usuario); // Aqui salvamos o nome do usuário, informado no banco e no cadastro de usuários
-    await AsyncStorage.setItem('emailUsuario', dados.email); // Salva o email do usuário
-
-    router.replace('/tabela'); // Se estiver tudo certo, ele direciona/substitui o usuário para tela de tabela.js
-
-  } catch (erro) { // Captura possíveis erros que podem ocorrer durante a tentativa de login
-    console.log(erro); // Exibe o erro no console para ajudar a identificar o problema
-    alert('Não foi possível conectar ao servidor'); // Exibe essa mensagem no celular do usuário via JSON 
-  }
-};
+  };
 
   return (
-    <View style={styles.container}> 
+    <View style={styles.container}>
       <Image
         source={require('../assets/industria.png')}
         style={styles.background}
-        resizeMode="cover" // Faz a imagem preencher a área disponível, podendo cortar partes dela
+        resizeMode="cover"
       />
 
       <LinearGradient
         colors={[
-          'rgba(29, 50, 115, 0.25)', 
+          'rgba(29, 50, 115, 0.25)',
           'rgba(82, 104, 168, 0.95)'
         ]}
-        start={{ x: 0, y: 0 }} // Define o início do gradiente no topo (0 é transparente e 1 é opaco)
-        end={{ x: 0, y: 1 }} // Define o final do gradiente
+        start={{ x: 0, y: 0 }}
+        end={{ x: 0, y: 1 }}
         style={styles.gradient}
       />
 
@@ -93,7 +88,7 @@ export default function Login() {
           AO SENAI ALMOXARIFADO
         </Text>
 
-        <View style={styles.inputContainer}> 
+        <View style={styles.inputContainer}>
           <Image
             source={require('../assets/fiep.png')}
             style={styles.logo}
@@ -105,15 +100,15 @@ export default function Login() {
 
           <TextInput
             style={[
-              styles.input, // Define estilo padrão antes do usuário clicar no campo input
-              emailFocus && styles.inputFocus // emailFocus agora é true, então o estilo inputFocus é ativado
+              styles.input,
+              emailFocus && styles.inputFocus
             ]}
-            placeholder="seunome@empresa.com" // Sugestão dentro da caixa input
-            placeholderTextColor="#888" // Cor do textinho
-            value={email} // Vincula o conteúdo digitado a variável email
-            onChangeText={setEmail} // Atualiza a variável conforme o usuário vai digitando
-            onFocus={() => setEmailFocus(true)} // Ativa o estado de foco quando o usuário seleciona o campo (true)
-            onBlur={() => setEmailFocus(false)} // Desativa o estado de foco quando o usuário sai do campo (false)
+            placeholder="seunome@empresa.com"
+            placeholderTextColor="#888"
+            value={email}
+            onChangeText={setEmail}
+            onFocus={() => setEmailFocus(true)}
+            onBlur={() => setEmailFocus(false)}
           />
 
           <Text style={styles.senha}>
@@ -123,19 +118,20 @@ export default function Login() {
           <TextInput
             style={[
               styles.input,
-              senhaFocus && styles.inputFocus // senhaFocus agora é true, então o estilo senhaFocus é ativado
+              senhaFocus && styles.inputFocus
             ]}
-            placeholder="Digite sua senha" // Sugestão dentro da caixa input
-            placeholderTextColor="#888" // Cor do textinho
-            value={senha} // Vincula o conteúdo digitado a variável senha
-            onChangeText={setSenha} // Atualiza a variável conforme o usuário vai digitando
-            onFocus={() => setSenhaFocus(true)} // Ativa o estado de foco quando o usuário seleciona o campo (true)
-            onBlur={() => setSenhaFocus(false)} // Desativa o estado de foco quando o usuário sai do campo (false)
+            placeholder="Digite sua senha"
+            placeholderTextColor="#888"
+            value={senha}
+            onChangeText={setSenha}
+            onFocus={() => setSenhaFocus(true)}
+            onBlur={() => setSenhaFocus(false)}
+            secureTextEntry={true}
           />
 
           <TouchableOpacity
             style={styles.button}
-            onPress={fazerLogin} // Quando o usuário clicar, o botão terá outro estilo
+            onPress={fazerLogin}
           >
             <Text style={styles.buttonText}>
               ENTRAR

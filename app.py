@@ -78,10 +78,10 @@ def login_erro():
     return render_template('login_erro.html')
 
 # LOGIN DO APLICATIVO
-@app.route('/login_app', methods=['POST'])
-def login_app():
+@app.route('/login_app', methods=['POST']) # Cria o endereço da API que o app vai acessar
+def login_app(): # Método post, ou seja que envia informações
 
-    dados = request.get_json()
+    dados = request.get_json() # Recebe email e senha cadastrados em forma de JSON e armazena em dados
 
     if not dados:
         return jsonify({
@@ -91,12 +91,12 @@ def login_app():
     email = dados.get('email')
     senha = dados.get('senha')
 
-    if not email or not senha:
+    if not email or not senha: 
         return jsonify({
             'mensagem': 'Email e senha são obrigatórios'
         }), 400
 
-    conexao = get_db()
+    conexao = get_db() # Chama a conexão inicial
     cursor = conexao.cursor()
 
     cursor.execute("""
@@ -319,6 +319,7 @@ def entrada():
 @app.route('/entrada_app', methods=['POST'])
 def entrada_app():
 
+    # Recebe os dados preenchidos na tela do app
     nome = request.form.get('nome')
     categoria = request.form.get('categoria')
     qtde = request.form.get('qtde')
@@ -329,6 +330,7 @@ def entrada_app():
     tipo = request.form.get('tipo')
     imagem = request.files.get('imagem')
 
+    # Remove espaços que estejam nos textos
     if nome:
         nome = nome.strip()
     if categoria:
@@ -338,6 +340,7 @@ def entrada_app():
     if descricao:
         descricao = descricao.strip()
 
+    # Se os campos nome, qtde e responsavel não forem preenchidos 
     if not nome or not qtde or not responsavel or not tipo:
         return jsonify({
             "success": False,
@@ -345,16 +348,16 @@ def entrada_app():
         }), 400
 
     try:
-        qtde = int(qtde)
+        qtde = int(qtde) 
 
-        if qtde <= 0:
+        if qtde <= 0: # Transforma em numero inteiro ( qtde e estoque_min)
             return jsonify({
                 "success": False,
                 "erro": "Quantidade deve ser maior que zero"
             }), 400
 
         estoque_min = int(estoque_min) if estoque_min else 0
-        preco = float(preco) if preco else 0.0
+        preco = float(preco) if preco else 0.0 # Transforma em numero decimal
 
     except (ValueError, TypeError):
         return jsonify({
@@ -364,6 +367,7 @@ def entrada_app():
 
     caminho_imagem = None
 
+    # Verifica se o app enviou uma imagem, recupe o nome original e ajusta ele
     if imagem:
         nome_arquivo = secure_filename(imagem.filename)
 
@@ -379,6 +383,7 @@ def entrada_app():
             os.path.join(pasta, nome_arquivo)
         )
 
+        # Guarda o caminho da imagem
         caminho_imagem = url_for(
             'static',
             filename=f'uploads/{nome_arquivo}'
@@ -394,7 +399,7 @@ def entrada_app():
         cursor.execute("""
             SELECT qtde, preco, categoria, estoque_min, descricao, imagem
             FROM estoque
-            WHERE TRIM(nome) = TRIM(%s)
+            WHERE TRIM(nome) = TRIM(%s) # TRIM remove os espaços
             LIMIT 1
         """, (nome,))
 
@@ -585,7 +590,7 @@ def tabela_app():
                 "qtde": item[4],
                 "estoque_min": item[5],
                 "preco": float(item[6]) if item[6] is not None else 0,
-                "descricao": item[6],
+                "descricao": item[7],
                 "imagem": item[8]
             })
 
